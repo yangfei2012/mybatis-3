@@ -25,6 +25,7 @@ public class CodeTester {
         Environment environment = new Environment("development", transactionFactory, dataSource);
         Configuration configuration = new Configuration(environment);
         configuration.addMapper(UserMapper.class);
+        
         SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(configuration);
 
         SqlSession session = sqlSessionFactory.openSession();
