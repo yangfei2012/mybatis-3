@@ -40,26 +40,26 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
     this.methodCache = methodCache;
   }
 
-  @Override
-  public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-    if (Object.class.equals(method.getDeclaringClass())) {
-      try {
-        return method.invoke(this, args);
-      } catch (Throwable t) {
-        throw ExceptionUtil.unwrapThrowable(t);
-      }
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        if (Object.class.equals(method.getDeclaringClass())) {
+            try {
+                return method.invoke(this, args);
+            } catch (Throwable t) {
+                throw ExceptionUtil.unwrapThrowable(t);
+            }
+        }
+        final MapperMethod mapperMethod = cachedMapperMethod(method);
+        return mapperMethod.execute(sqlSession, args);
     }
-    final MapperMethod mapperMethod = cachedMapperMethod(method);
-    return mapperMethod.execute(sqlSession, args);
-  }
 
-  private MapperMethod cachedMapperMethod(Method method) {
-    MapperMethod mapperMethod = methodCache.get(method);
-    if (mapperMethod == null) {
-      mapperMethod = new MapperMethod(mapperInterface, method, sqlSession.getConfiguration());
-      methodCache.put(method, mapperMethod);
+    private MapperMethod cachedMapperMethod(Method method) {
+        MapperMethod mapperMethod = methodCache.get(method);
+        if (mapperMethod == null) {
+            mapperMethod = new MapperMethod(mapperInterface, method, sqlSession.getConfiguration());
+            methodCache.put(method, mapperMethod);
+        }
+        return mapperMethod;
     }
-    return mapperMethod;
-  }
 
 }

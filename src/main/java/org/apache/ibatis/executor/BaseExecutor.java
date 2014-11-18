@@ -134,41 +134,41 @@ public abstract class BaseExecutor implements Executor {
     return query(ms, parameter, rowBounds, resultHandler, key, boundSql);
  }
 
-  @SuppressWarnings("unchecked")
-  @Override
-  public <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql) throws SQLException {
-    ErrorContext.instance().resource(ms.getResource()).activity("executing a query").object(ms.getId());
-    if (closed) {
-      throw new ExecutorException("Executor was closed.");
+    @SuppressWarnings("unchecked")
+    @Override
+    public <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql) throws SQLException {
+        ErrorContext.instance().resource(ms.getResource()).activity("executing a query").object(ms.getId());
+        if (closed) {
+            throw new ExecutorException("Executor was closed.");
+        }
+        if (queryStack == 0 && ms.isFlushCacheRequired()) {
+            clearLocalCache();
+        }
+        List<E> list;
+        try {
+            queryStack++;
+            list = resultHandler == null ? (List<E>) localCache.getObject(key) : null;
+            if (list != null) {
+                handleLocallyCachedOutputParameters(ms, key, parameter, boundSql);
+            } else {
+                list = queryFromDatabase(ms, parameter, rowBounds, resultHandler, key, boundSql);
+            }
+        } finally {
+            queryStack--;
+        }
+        if (queryStack == 0) {
+            for (DeferredLoad deferredLoad : deferredLoads) {
+                deferredLoad.load();
+            }
+            // issue #601
+            deferredLoads.clear();
+            if (configuration.getLocalCacheScope() == LocalCacheScope.STATEMENT) {
+                // issue #482
+                clearLocalCache();
+            }
+        }
+        return list;
     }
-    if (queryStack == 0 && ms.isFlushCacheRequired()) {
-      clearLocalCache();
-    }
-    List<E> list;
-    try {
-      queryStack++;
-      list = resultHandler == null ? (List<E>) localCache.getObject(key) : null;
-      if (list != null) {
-        handleLocallyCachedOutputParameters(ms, key, parameter, boundSql);
-      } else {
-        list = queryFromDatabase(ms, parameter, rowBounds, resultHandler, key, boundSql);
-      }
-    } finally {
-      queryStack--;
-    }
-    if (queryStack == 0) {
-      for (DeferredLoad deferredLoad : deferredLoads) {
-        deferredLoad.load();
-      }
-      // issue #601
-      deferredLoads.clear();
-      if (configuration.getLocalCacheScope() == LocalCacheScope.STATEMENT) {
-        // issue #482
-        clearLocalCache();
-      }
-    }
-    return list;
-  }
 
   @Override
   public void deferLoad(MappedStatement ms, MetaObject resultObject, String property, CacheKey key, Class<?> targetType) {
@@ -311,14 +311,14 @@ public abstract class BaseExecutor implements Executor {
     return list;
   }
 
-  protected Connection getConnection(Log statementLog) throws SQLException {
-    Connection connection = transaction.getConnection();
-    if (statementLog.isDebugEnabled()) {
-      return ConnectionLogger.newInstance(connection, statementLog, queryStack);
-    } else {
-      return connection;
+    protected Connection getConnection(Log statementLog) throws SQLException {
+        Connection connection = transaction.getConnection();
+        if (statementLog.isDebugEnabled()) {
+            return ConnectionLogger.newInstance(connection, statementLog, queryStack);
+        } else {
+            return connection;
+        }
     }
-  }
 
   @Override
   public void setExecutorWrapper(Executor wrapper) {

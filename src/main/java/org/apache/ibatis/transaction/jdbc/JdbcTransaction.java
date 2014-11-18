@@ -131,15 +131,15 @@ public class JdbcTransaction implements Transaction {
     }
   }
 
-  protected void openConnection() throws SQLException {
-    if (log.isDebugEnabled()) {
-      log.debug("Opening JDBC Connection");
+    protected void openConnection() throws SQLException {
+        if (log.isDebugEnabled()) {
+            log.debug("Opening JDBC Connection");
+        }
+        connection = dataSource.getConnection();
+        if (level != null) {
+            connection.setTransactionIsolation(level.getLevel());
+        }
+        setDesiredAutoCommit(autoCommmit);
     }
-    connection = dataSource.getConnection();
-    if (level != null) {
-      connection.setTransactionIsolation(level.getLevel());
-    }
-    setDesiredAutoCommit(autoCommmit);
-  }
 
 }

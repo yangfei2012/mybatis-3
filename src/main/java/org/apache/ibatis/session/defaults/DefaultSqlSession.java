@@ -63,18 +63,18 @@ public class DefaultSqlSession implements SqlSession {
     return this.<T>selectOne(statement, null);
   }
 
-  @Override
-  public <T> T selectOne(String statement, Object parameter) {
-    // Popular vote was to return null on 0 results and throw exception on too many.
-    List<T> list = this.<T>selectList(statement, parameter);
-    if (list.size() == 1) {
-      return list.get(0);
-    } else if (list.size() > 1) {
-      throw new TooManyResultsException("Expected one result (or null) to be returned by selectOne(), but found: " + list.size());
-    } else {
-      return null;
+    @Override
+    public <T> T selectOne(String statement, Object parameter) {
+        // Popular vote was to return null on 0 results and throw exception on too many.
+        List<T> list = this.<T>selectList(statement, parameter);
+        if (list.size() == 1) {
+            return list.get(0);
+        } else if (list.size() > 1) {
+            throw new TooManyResultsException("Expected one result (or null) to be returned by selectOne(), but found: " + list.size());
+        } else {
+            return null;
+        }
     }
-  }
 
   @Override
   public <K, V> Map<K, V> selectMap(String statement, String mapKey) {
@@ -104,22 +104,22 @@ public class DefaultSqlSession implements SqlSession {
     return this.selectList(statement, null);
   }
 
-  @Override
-  public <E> List<E> selectList(String statement, Object parameter) {
-    return this.selectList(statement, parameter, RowBounds.DEFAULT);
-  }
-
-  @Override
-  public <E> List<E> selectList(String statement, Object parameter, RowBounds rowBounds) {
-    try {
-      MappedStatement ms = configuration.getMappedStatement(statement);
-      return executor.query(ms, wrapCollection(parameter), rowBounds, Executor.NO_RESULT_HANDLER);
-    } catch (Exception e) {
-      throw ExceptionFactory.wrapException("Error querying database.  Cause: " + e, e);
-    } finally {
-      ErrorContext.instance().reset();
+    @Override
+    public <E> List<E> selectList(String statement, Object parameter) {
+        return this.selectList(statement, parameter, RowBounds.DEFAULT);
     }
-  }
+
+    @Override
+    public <E> List<E> selectList(String statement, Object parameter, RowBounds rowBounds) {
+        try {
+            MappedStatement ms = configuration.getMappedStatement(statement);
+            return executor.query(ms, wrapCollection(parameter), rowBounds, Executor.NO_RESULT_HANDLER);
+        } catch (Exception e) {
+            throw ExceptionFactory.wrapException("Error querying database.  Cause: " + e, e);
+        } finally {
+            ErrorContext.instance().reset();
+        }
+    }
 
   @Override
   public void select(String statement, Object parameter, ResultHandler handler) {

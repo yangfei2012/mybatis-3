@@ -68,20 +68,20 @@ public class ReuseExecutor extends BaseExecutor {
     return Collections.emptyList();
   }
 
-  private Statement prepareStatement(StatementHandler handler, Log statementLog) throws SQLException {
-    Statement stmt;
-    BoundSql boundSql = handler.getBoundSql();
-    String sql = boundSql.getSql();
-    if (hasStatementFor(sql)) {
-      stmt = getStatement(sql);
-    } else {
-      Connection connection = getConnection(statementLog);
-      stmt = handler.prepare(connection);
-      putStatement(sql, stmt);
+    private Statement prepareStatement(StatementHandler handler, Log statementLog) throws SQLException {
+        Statement stmt;
+        BoundSql boundSql = handler.getBoundSql();
+        String sql = boundSql.getSql();
+        if (hasStatementFor(sql)) {
+            stmt = getStatement(sql);
+        } else {
+            Connection connection = getConnection(statementLog);
+            stmt = handler.prepare(connection);
+            putStatement(sql, stmt);
+        }
+        handler.parameterize(stmt);
+        return stmt;
     }
-    handler.parameterize(stmt);
-    return stmt;
-  }
 
   private boolean hasStatementFor(String sql) {
     try {
