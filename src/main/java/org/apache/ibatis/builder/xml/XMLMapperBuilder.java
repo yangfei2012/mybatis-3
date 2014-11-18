@@ -87,57 +87,57 @@ public class XMLMapperBuilder extends BaseBuilder {
     this.resource = resource;
   }
 
-  public void parse() {
-    if (!configuration.isResourceLoaded(resource)) {
-      configurationElement(parser.evalNode("/mapper"));
-      configuration.addLoadedResource(resource);
-      bindMapperForNamespace();
-    }
+    public void parse() {
+        if (!configuration.isResourceLoaded(resource)) {
+            configurationElement(parser.evalNode("/mapper"));
+            configuration.addLoadedResource(resource);
+            bindMapperForNamespace();
+        }
 
-    parsePendingResultMaps();
-    parsePendingChacheRefs();
-    parsePendingStatements();
-  }
+        parsePendingResultMaps();
+        parsePendingChacheRefs();
+        parsePendingStatements();
+    }
 
   public XNode getSqlFragment(String refid) {
     return sqlFragments.get(refid);
   }
 
-  private void configurationElement(XNode context) {
-    try {
-      String namespace = context.getStringAttribute("namespace");
-      if (namespace.equals("")) {
-        throw new BuilderException("Mapper's namespace cannot be empty");
-      }
-      builderAssistant.setCurrentNamespace(namespace);
-      cacheRefElement(context.evalNode("cache-ref"));
-      cacheElement(context.evalNode("cache"));
-      parameterMapElement(context.evalNodes("/mapper/parameterMap"));
-      resultMapElements(context.evalNodes("/mapper/resultMap"));
-      sqlElement(context.evalNodes("/mapper/sql"));
-      buildStatementFromContext(context.evalNodes("select|insert|update|delete"));
-    } catch (Exception e) {
-      throw new BuilderException("Error parsing Mapper XML. Cause: " + e, e);
+    private void configurationElement(XNode context) {
+        try {
+            String namespace = context.getStringAttribute("namespace");
+            if (namespace.equals("")) {
+                throw new BuilderException("Mapper's namespace cannot be empty");
+            }
+            builderAssistant.setCurrentNamespace(namespace);
+            cacheRefElement(context.evalNode("cache-ref"));
+            cacheElement(context.evalNode("cache"));
+            parameterMapElement(context.evalNodes("/mapper/parameterMap"));
+            resultMapElements(context.evalNodes("/mapper/resultMap"));
+            sqlElement(context.evalNodes("/mapper/sql"));
+            buildStatementFromContext(context.evalNodes("select|insert|update|delete"));
+        } catch (Exception e) {
+            throw new BuilderException("Error parsing Mapper XML. Cause: " + e, e);
+        }
     }
-  }
 
-  private void buildStatementFromContext(List<XNode> list) {
-    if (configuration.getDatabaseId() != null) {
-      buildStatementFromContext(list, configuration.getDatabaseId());
+    private void buildStatementFromContext(List<XNode> list) {
+        if (configuration.getDatabaseId() != null) {
+            buildStatementFromContext(list, configuration.getDatabaseId());
+        }
+        buildStatementFromContext(list, null);
     }
-    buildStatementFromContext(list, null);
-  }
 
-  private void buildStatementFromContext(List<XNode> list, String requiredDatabaseId) {
-    for (XNode context : list) {
-      final XMLStatementBuilder statementParser = new XMLStatementBuilder(configuration, builderAssistant, context, requiredDatabaseId);
-      try {
-        statementParser.parseStatementNode();
-      } catch (IncompleteElementException e) {
-        configuration.addIncompleteStatement(statementParser);
-      }
+    private void buildStatementFromContext(List<XNode> list, String requiredDatabaseId) {
+        for (XNode context : list) {
+            final XMLStatementBuilder statementParser = new XMLStatementBuilder(configuration, builderAssistant, context, requiredDatabaseId);
+            try {
+                statementParser.parseStatementNode();
+            } catch (IncompleteElementException e) {
+                configuration.addIncompleteStatement(statementParser);
+            }
+        }
     }
-  }
 
   private void parsePendingResultMaps() {
     Collection<ResultMapResolver> incompleteResultMaps = configuration.getIncompleteResultMaps();
@@ -390,25 +390,25 @@ public class XMLMapperBuilder extends BaseBuilder {
     return null;
   }
 
-  private void bindMapperForNamespace() {
-    String namespace = builderAssistant.getCurrentNamespace();
-    if (namespace != null) {
-      Class<?> boundType = null;
-      try {
-        boundType = Resources.classForName(namespace);
-      } catch (ClassNotFoundException e) {
-        //ignore, bound type is not required
-      }
-      if (boundType != null) {
-        if (!configuration.hasMapper(boundType)) {
-          // Spring may not know the real resource name so we set a flag
-          // to prevent loading again this resource from the mapper interface
-          // look at MapperAnnotationBuilder#loadXmlResource
-          configuration.addLoadedResource("namespace:" + namespace);
-          configuration.addMapper(boundType);
+    private void bindMapperForNamespace() {
+        String namespace = builderAssistant.getCurrentNamespace();
+        if (namespace != null) {
+            Class<?> boundType = null;
+            try {
+                boundType = Resources.classForName(namespace);
+            } catch (ClassNotFoundException e) {
+                //ignore, bound type is not required
+            }
+            if (boundType != null) {
+                if (!configuration.hasMapper(boundType)) {
+                    // Spring may not know the real resource name so we set a flag
+                    // to prevent loading again this resource from the mapper interface
+                    // look at MapperAnnotationBuilder#loadXmlResource
+                    configuration.addLoadedResource("namespace:" + namespace);
+                    configuration.addMapper(boundType);
+                }
+            }
         }
-      }
     }
-  }
 
 }

@@ -250,47 +250,47 @@ public class MapperBuilderAssistant extends BaseBuilder {
     return discriminatorBuilder.build();
   }
 
-  public MappedStatement addMappedStatement(
-      String id,
-      SqlSource sqlSource,
-      StatementType statementType,
-      SqlCommandType sqlCommandType,
-      Integer fetchSize,
-      Integer timeout,
-      String parameterMap,
-      Class<?> parameterType,
-      String resultMap,
-      Class<?> resultType,
-      ResultSetType resultSetType,
-      boolean flushCache,
-      boolean useCache,
-      boolean resultOrdered,
-      KeyGenerator keyGenerator,
-      String keyProperty,
-      String keyColumn,
-      String databaseId,
-      LanguageDriver lang,
-      String resultSets) {
+    public MappedStatement addMappedStatement(
+            String id,
+            SqlSource sqlSource,
+            StatementType statementType,
+            SqlCommandType sqlCommandType,
+            Integer fetchSize,
+            Integer timeout,
+            String parameterMap,
+            Class<?> parameterType,
+            String resultMap,
+            Class<?> resultType,
+            ResultSetType resultSetType,
+            boolean flushCache,
+            boolean useCache,
+            boolean resultOrdered,
+            KeyGenerator keyGenerator,
+            String keyProperty,
+            String keyColumn,
+            String databaseId,
+            LanguageDriver lang,
+            String resultSets) {
     
-    if (unresolvedCacheRef) {
-      throw new IncompleteElementException("Cache-ref not yet resolved");
-    }
+        if (unresolvedCacheRef) {
+            throw new IncompleteElementException("Cache-ref not yet resolved");
+        }
     
-    id = applyCurrentNamespace(id, false);
-    boolean isSelect = sqlCommandType == SqlCommandType.SELECT;
+        id = applyCurrentNamespace(id, false);
+        boolean isSelect = sqlCommandType == SqlCommandType.SELECT;
 
-    MappedStatement.Builder statementBuilder = new MappedStatement.Builder(configuration, id, sqlSource, sqlCommandType);
-    statementBuilder.resource(resource);
-    statementBuilder.fetchSize(fetchSize);
-    statementBuilder.statementType(statementType);
-    statementBuilder.keyGenerator(keyGenerator);
-    statementBuilder.keyProperty(keyProperty);
-    statementBuilder.keyColumn(keyColumn);
-    statementBuilder.databaseId(databaseId);
-    statementBuilder.lang(lang);
-    statementBuilder.resultOrdered(resultOrdered);
-    statementBuilder.resulSets(resultSets);
-    setStatementTimeout(timeout, statementBuilder);
+        MappedStatement.Builder statementBuilder = new MappedStatement.Builder(configuration, id, sqlSource, sqlCommandType);
+        statementBuilder.resource(resource);
+        statementBuilder.fetchSize(fetchSize);
+        statementBuilder.statementType(statementType);
+        statementBuilder.keyGenerator(keyGenerator);
+        statementBuilder.keyProperty(keyProperty);
+        statementBuilder.keyColumn(keyColumn);
+        statementBuilder.databaseId(databaseId);
+        statementBuilder.lang(lang);
+        statementBuilder.resultOrdered(resultOrdered);
+        statementBuilder.resulSets(resultSets);
+        setStatementTimeout(timeout, statementBuilder);
 
     setStatementParameterMap(parameterMap, parameterType, statementBuilder);
     setStatementResultMap(resultMap, resultType, resultSetType, statementBuilder);

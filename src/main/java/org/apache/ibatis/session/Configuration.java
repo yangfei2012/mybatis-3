@@ -263,9 +263,9 @@ public class Configuration {
     this.mapUnderscoreToCamelCase = mapUnderscoreToCamelCase;
   }
 
-  public void addLoadedResource(String resource) {
-    loadedResources.add(resource);
-  }
+    public void addLoadedResource(String resource) {
+        loadedResources.add(resource);
+    }
 
   public boolean isResourceLoaded(String resource) {
     return loadedResources.contains(resource);
@@ -647,9 +647,9 @@ public class Configuration {
     mapperRegistry.addMappers(packageName);
   }
 
-  public <T> void addMapper(Class<T> type) {
-    mapperRegistry.addMapper(type);
-  }
+    public <T> void addMapper(Class<T> type) {
+        mapperRegistry.addMapper(type);
+    }
 
   public <T> T getMapper(Class<T> type, SqlSession sqlSession) {
     return mapperRegistry.getMapper(type, sqlSession);

@@ -53,73 +53,73 @@ public class XMLStatementBuilder extends BaseBuilder {
     this.requiredDatabaseId = databaseId;
   }
 
-  public void parseStatementNode() {
-    String id = context.getStringAttribute("id");
-    String databaseId = context.getStringAttribute("databaseId");
+    public void parseStatementNode() {
+        String id = context.getStringAttribute("id");
+        String databaseId = context.getStringAttribute("databaseId");
 
-    if (!databaseIdMatchesCurrent(id, databaseId, this.requiredDatabaseId)) {
-      return;
-    }
+        if (!databaseIdMatchesCurrent(id, databaseId, this.requiredDatabaseId)) {
+            return;
+        }
 
-    Integer fetchSize = context.getIntAttribute("fetchSize");
-    Integer timeout = context.getIntAttribute("timeout");
-    String parameterMap = context.getStringAttribute("parameterMap");
-    String parameterType = context.getStringAttribute("parameterType");
-    Class<?> parameterTypeClass = resolveClass(parameterType);
-    String resultMap = context.getStringAttribute("resultMap");
-    String resultType = context.getStringAttribute("resultType");
-    String lang = context.getStringAttribute("lang");
-    LanguageDriver langDriver = getLanguageDriver(lang);
+        Integer fetchSize = context.getIntAttribute("fetchSize");
+        Integer timeout = context.getIntAttribute("timeout");
+        String parameterMap = context.getStringAttribute("parameterMap");
+        String parameterType = context.getStringAttribute("parameterType");
+        Class<?> parameterTypeClass = resolveClass(parameterType);
+        String resultMap = context.getStringAttribute("resultMap");
+        String resultType = context.getStringAttribute("resultType");
+        String lang = context.getStringAttribute("lang");
+        LanguageDriver langDriver = getLanguageDriver(lang);
 
-    Class<?> resultTypeClass = resolveClass(resultType);
-    String resultSetType = context.getStringAttribute("resultSetType");
-    StatementType statementType = StatementType.valueOf(context.getStringAttribute("statementType", StatementType.PREPARED.toString()));
-    ResultSetType resultSetTypeEnum = resolveResultSetType(resultSetType);
+        Class<?> resultTypeClass = resolveClass(resultType);
+        String resultSetType = context.getStringAttribute("resultSetType");
+        StatementType statementType = StatementType.valueOf(context.getStringAttribute("statementType", StatementType.PREPARED.toString()));
+        ResultSetType resultSetTypeEnum = resolveResultSetType(resultSetType);
 
-    String nodeName = context.getNode().getNodeName();
-    SqlCommandType sqlCommandType = SqlCommandType.valueOf(nodeName.toUpperCase(Locale.ENGLISH));
-    boolean isSelect = sqlCommandType == SqlCommandType.SELECT;
-    boolean flushCache = context.getBooleanAttribute("flushCache", !isSelect);
-    boolean useCache = context.getBooleanAttribute("useCache", isSelect);
-    boolean resultOrdered = context.getBooleanAttribute("resultOrdered", false);
+        String nodeName = context.getNode().getNodeName();
+        SqlCommandType sqlCommandType = SqlCommandType.valueOf(nodeName.toUpperCase(Locale.ENGLISH));
+        boolean isSelect = sqlCommandType == SqlCommandType.SELECT;
+        boolean flushCache = context.getBooleanAttribute("flushCache", !isSelect);
+        boolean useCache = context.getBooleanAttribute("useCache", isSelect);
+        boolean resultOrdered = context.getBooleanAttribute("resultOrdered", false);
 
-    // Include Fragments before parsing
-    XMLIncludeTransformer includeParser = new XMLIncludeTransformer(configuration, builderAssistant);
-    includeParser.applyIncludes(context.getNode());
+        // Include Fragments before parsing
+        XMLIncludeTransformer includeParser = new XMLIncludeTransformer(configuration, builderAssistant);
+        includeParser.applyIncludes(context.getNode());
 
-    // Parse selectKey after includes and remove them.
-    processSelectKeyNodes(id, parameterTypeClass, langDriver);
+        // Parse selectKey after includes and remove them.
+        processSelectKeyNodes(id, parameterTypeClass, langDriver);
     
-    // Parse the SQL (pre: <selectKey> and <include> were parsed and removed)
-    SqlSource sqlSource = langDriver.createSqlSource(configuration, context, parameterTypeClass);
-    String resultSets = context.getStringAttribute("resultSets");
-    String keyProperty = context.getStringAttribute("keyProperty");
-    String keyColumn = context.getStringAttribute("keyColumn");
-    KeyGenerator keyGenerator;
-    String keyStatementId = id + SelectKeyGenerator.SELECT_KEY_SUFFIX;
-    keyStatementId = builderAssistant.applyCurrentNamespace(keyStatementId, true);
-    if (configuration.hasKeyGenerator(keyStatementId)) {
-      keyGenerator = configuration.getKeyGenerator(keyStatementId);
-    } else {
-      keyGenerator = context.getBooleanAttribute("useGeneratedKeys",
-          configuration.isUseGeneratedKeys() && SqlCommandType.INSERT.equals(sqlCommandType))
-          ? new Jdbc3KeyGenerator() : new NoKeyGenerator();
-    }
+        // Parse the SQL (pre: <selectKey> and <include> were parsed and removed)
+        SqlSource sqlSource = langDriver.createSqlSource(configuration, context, parameterTypeClass);
+        String resultSets = context.getStringAttribute("resultSets");
+        String keyProperty = context.getStringAttribute("keyProperty");
+        String keyColumn = context.getStringAttribute("keyColumn");
+        KeyGenerator keyGenerator;
+        String keyStatementId = id + SelectKeyGenerator.SELECT_KEY_SUFFIX;
+        keyStatementId = builderAssistant.applyCurrentNamespace(keyStatementId, true);
+        if (configuration.hasKeyGenerator(keyStatementId)) {
+            keyGenerator = configuration.getKeyGenerator(keyStatementId);
+        } else {
+            keyGenerator = context.getBooleanAttribute("useGeneratedKeys",
+                configuration.isUseGeneratedKeys() && SqlCommandType.INSERT.equals(sqlCommandType))
+                ? new Jdbc3KeyGenerator() : new NoKeyGenerator();
+        }
 
-    builderAssistant.addMappedStatement(id, sqlSource, statementType, sqlCommandType,
+        builderAssistant.addMappedStatement(id, sqlSource, statementType, sqlCommandType,
         fetchSize, timeout, parameterMap, parameterTypeClass, resultMap, resultTypeClass,
         resultSetTypeEnum, flushCache, useCache, resultOrdered, 
         keyGenerator, keyProperty, keyColumn, databaseId, langDriver, resultSets);
-  }
-
-  private void processSelectKeyNodes(String id, Class<?> parameterTypeClass, LanguageDriver langDriver) {
-    List<XNode> selectKeyNodes = context.evalNodes("selectKey");
-    if (configuration.getDatabaseId() != null) {
-      parseSelectKeyNodes(id, selectKeyNodes, parameterTypeClass, langDriver, configuration.getDatabaseId());
     }
-    parseSelectKeyNodes(id, selectKeyNodes, parameterTypeClass, langDriver, null);
-    removeSelectKeyNodes(selectKeyNodes);
-  }
+
+    private void processSelectKeyNodes(String id, Class<?> parameterTypeClass, LanguageDriver langDriver) {
+        List<XNode> selectKeyNodes = context.evalNodes("selectKey");
+        if (configuration.getDatabaseId() != null) {
+            parseSelectKeyNodes(id, selectKeyNodes, parameterTypeClass, langDriver, configuration.getDatabaseId());
+        }
+        parseSelectKeyNodes(id, selectKeyNodes, parameterTypeClass, langDriver, null);
+        removeSelectKeyNodes(selectKeyNodes);
+    }
 
   private void parseSelectKeyNodes(String parentId, List<XNode> list, Class<?> parameterTypeClass, LanguageDriver langDriver, String skRequiredDatabaseId) {
     for (XNode nodeToHandle : list) {

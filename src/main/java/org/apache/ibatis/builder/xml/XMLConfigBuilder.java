@@ -93,24 +93,24 @@ public class XMLConfigBuilder extends BaseBuilder {
     return configuration;
   }
 
-  private void parseConfiguration(XNode root) {
-    try {
-      //issue #117 read properties first
-      propertiesElement(root.evalNode("properties"));
-      typeAliasesElement(root.evalNode("typeAliases"));
-      pluginElement(root.evalNode("plugins"));
-      objectFactoryElement(root.evalNode("objectFactory"));
-      objectWrapperFactoryElement(root.evalNode("objectWrapperFactory"));
-      settingsElement(root.evalNode("settings"));
-      // read it after objectFactory and objectWrapperFactory issue #631
-      environmentsElement(root.evalNode("environments"));
-      databaseIdProviderElement(root.evalNode("databaseIdProvider"));
-      typeHandlerElement(root.evalNode("typeHandlers"));
-      mapperElement(root.evalNode("mappers"));
-    } catch (Exception e) {
-      throw new BuilderException("Error parsing SQL Mapper Configuration. Cause: " + e, e);
+    private void parseConfiguration(XNode root) {
+        try {
+            //issue #117 read properties first
+            propertiesElement(root.evalNode("properties"));
+            typeAliasesElement(root.evalNode("typeAliases"));
+            pluginElement(root.evalNode("plugins"));
+            objectFactoryElement(root.evalNode("objectFactory"));
+            objectWrapperFactoryElement(root.evalNode("objectWrapperFactory"));
+            settingsElement(root.evalNode("settings"));
+            // read it after objectFactory and objectWrapperFactory issue #631
+            environmentsElement(root.evalNode("environments"));
+            databaseIdProviderElement(root.evalNode("databaseIdProvider"));
+            typeHandlerElement(root.evalNode("typeHandlers"));
+            mapperElement(root.evalNode("mappers"));
+        } catch (Exception e) {
+            throw new BuilderException("Error parsing SQL Mapper Configuration. Cause: " + e, e);
+        }
     }
-  }
 
   private void typeAliasesElement(XNode parent) {
     if (parent != null) {
@@ -310,36 +310,36 @@ public class XMLConfigBuilder extends BaseBuilder {
     }
   }
 
-  private void mapperElement(XNode parent) throws Exception {
-    if (parent != null) {
-      for (XNode child : parent.getChildren()) {
-        if ("package".equals(child.getName())) {
-          String mapperPackage = child.getStringAttribute("name");
-          configuration.addMappers(mapperPackage);
-        } else {
-          String resource = child.getStringAttribute("resource");
-          String url = child.getStringAttribute("url");
-          String mapperClass = child.getStringAttribute("class");
-          if (resource != null && url == null && mapperClass == null) {
-            ErrorContext.instance().resource(resource);
-            InputStream inputStream = Resources.getResourceAsStream(resource);
-            XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, resource, configuration.getSqlFragments());
-            mapperParser.parse();
-          } else if (resource == null && url != null && mapperClass == null) {
-            ErrorContext.instance().resource(url);
-            InputStream inputStream = Resources.getUrlAsStream(url);
-            XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, url, configuration.getSqlFragments());
-            mapperParser.parse();
-          } else if (resource == null && url == null && mapperClass != null) {
-            Class<?> mapperInterface = Resources.classForName(mapperClass);
-            configuration.addMapper(mapperInterface);
-          } else {
-            throw new BuilderException("A mapper element may only specify a url, resource or class, but not more than one.");
-          }
+    private void mapperElement(XNode parent) throws Exception {
+        if (parent != null) {
+            for (XNode child : parent.getChildren()) {
+                if ("package".equals(child.getName())) {
+                    String mapperPackage = child.getStringAttribute("name");
+                    configuration.addMappers(mapperPackage);
+                } else {
+                    String resource = child.getStringAttribute("resource");
+                    String url = child.getStringAttribute("url");
+                    String mapperClass = child.getStringAttribute("class");
+                    if (resource!=null && url==null && mapperClass==null) {
+                        ErrorContext.instance().resource(resource);
+                        InputStream inputStream = Resources.getResourceAsStream(resource);
+                        XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, resource, configuration.getSqlFragments());
+                        mapperParser.parse();
+                    } else if (resource == null && url != null && mapperClass == null) {
+                        ErrorContext.instance().resource(url);
+                        InputStream inputStream = Resources.getUrlAsStream(url);
+                        XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, url, configuration.getSqlFragments());
+                        mapperParser.parse();
+                    } else if (resource == null && url == null && mapperClass != null) {
+                        Class<?> mapperInterface = Resources.classForName(mapperClass);
+                        configuration.addMapper(mapperInterface);
+                    } else {
+                        throw new BuilderException("A mapper element may only specify a url, resource or class, but not more than one.");
+                    }
+                }
+            }
         }
-      }
     }
-  }
 
   private boolean isSpecifiedEnvironment(String id) {
     if (environment == null) {
