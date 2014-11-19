@@ -47,10 +47,10 @@ public class DefaultResultContext implements ResultContext {
     return stopped;
   }
 
-  public void nextResultObject(Object resultObject) {
-    resultCount++;
-    this.resultObject = resultObject;
-  }
+    public void nextResultObject(Object resultObject) {
+        resultCount++;
+        this.resultObject = resultObject;
+    }
 
   @Override
   public void stop() {

@@ -51,13 +51,13 @@ public class ReuseExecutor extends BaseExecutor {
     return handler.update(stmt);
   }
 
-  @Override
-  public <E> List<E> doQuery(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) throws SQLException {
-    Configuration configuration = ms.getConfiguration();
-    StatementHandler handler = configuration.newStatementHandler(wrapper, ms, parameter, rowBounds, resultHandler, boundSql);
-    Statement stmt = prepareStatement(handler, ms.getStatementLog());
-    return handler.<E>query(stmt, resultHandler);
-  }
+    @Override
+    public <E> List<E> doQuery(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) throws SQLException {
+        Configuration configuration = ms.getConfiguration();
+        StatementHandler handler = configuration.newStatementHandler(wrapper, ms, parameter, rowBounds, resultHandler, boundSql);
+        Statement stmt = prepareStatement(handler, ms.getStatementLog());
+        return handler.<E>query(stmt, resultHandler);
+    }
 
   @Override
   public List<BatchResult> doFlushStatements(boolean isRollback) throws SQLException {
