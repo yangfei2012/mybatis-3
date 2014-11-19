@@ -33,15 +33,14 @@ public class DateTypeHandler extends BaseTypeHandler<Date> {
     ps.setTimestamp(i, new Timestamp((parameter).getTime()));
   }
 
-  @Override
-  public Date getNullableResult(ResultSet rs, String columnName)
-      throws SQLException {
-    Timestamp sqlTimestamp = rs.getTimestamp(columnName);
-    if (sqlTimestamp != null) {
-      return new Date(sqlTimestamp.getTime());
+    @Override
+    public Date getNullableResult(ResultSet rs, String columnName) throws SQLException {
+        Timestamp sqlTimestamp = rs.getTimestamp(columnName);
+        if (sqlTimestamp != null) {
+            return new Date(sqlTimestamp.getTime());
+        }
+        return null;
     }
-    return null;
-  }
 
   @Override
   public Date getNullableResult(ResultSet rs, int columnIndex)

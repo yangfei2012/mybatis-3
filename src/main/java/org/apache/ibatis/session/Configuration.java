@@ -464,11 +464,17 @@ public class Configuration {
     return resultSetHandler;
   }
 
-  public StatementHandler newStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
-    StatementHandler statementHandler = new RoutingStatementHandler(executor, mappedStatement, parameterObject, rowBounds, resultHandler, boundSql);
-    statementHandler = (StatementHandler) interceptorChain.pluginAll(statementHandler);
-    return statementHandler;
-  }
+    public StatementHandler newStatementHandler(Executor executor,
+                                                MappedStatement mappedStatement,
+                                                Object parameterObject,
+                                                RowBounds rowBounds,
+                                                ResultHandler resultHandler,
+                                                BoundSql boundSql) {
+        StatementHandler statementHandler = new RoutingStatementHandler(
+                executor, mappedStatement, parameterObject, rowBounds, resultHandler, boundSql);
+        statementHandler = (StatementHandler) interceptorChain.pluginAll(statementHandler);
+        return statementHandler;
+    }
 
   public Executor newExecutor(Transaction transaction) {
     return newExecutor(transaction, defaultExecutorType);

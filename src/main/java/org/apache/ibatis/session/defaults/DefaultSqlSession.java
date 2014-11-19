@@ -131,17 +131,20 @@ public class DefaultSqlSession implements SqlSession {
     select(statement, null, RowBounds.DEFAULT, handler);
   }
 
-  @Override
-  public void select(String statement, Object parameter, RowBounds rowBounds, ResultHandler handler) {
-    try {
-      MappedStatement ms = configuration.getMappedStatement(statement);
-      executor.query(ms, wrapCollection(parameter), rowBounds, handler);
-    } catch (Exception e) {
-      throw ExceptionFactory.wrapException("Error querying database.  Cause: " + e, e);
-    } finally {
-      ErrorContext.instance().reset();
+    @Override
+    public void select(String statement,
+                       Object parameter,
+                       RowBounds rowBounds,
+                       ResultHandler handler) {
+        try {
+            MappedStatement ms = configuration.getMappedStatement(statement);
+            executor.query(ms, wrapCollection(parameter), rowBounds, handler);
+        } catch (Exception e) {
+            throw ExceptionFactory.wrapException("Error querying database.  Cause: " + e, e);
+        } finally {
+            ErrorContext.instance().reset();
+        }
     }
-  }
 
   @Override
   public int insert(String statement) {

@@ -52,15 +52,15 @@ public abstract class BaseTypeHandler<T> extends TypeReference<T> implements Typ
     }
   }
 
-  @Override
-  public T getResult(ResultSet rs, String columnName) throws SQLException {
-    T result = getNullableResult(rs, columnName);
-    if (rs.wasNull()) {
-      return null;
-    } else {
-      return result;
+    @Override
+    public T getResult(ResultSet rs, String columnName) throws SQLException {
+        T result = getNullableResult(rs, columnName);
+        if (rs.wasNull()) {
+            return null;
+        } else {
+            return result;
+        }
     }
-  }
 
   @Override
   public T getResult(ResultSet rs, int columnIndex) throws SQLException {

@@ -232,7 +232,10 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     }
   }
 
-    private void handleResultSet(ResultSetWrapper rsw, ResultMap resultMap, List<Object> multipleResults, ResultMapping parentMapping) throws SQLException {
+    private void handleResultSet(ResultSetWrapper rsw,
+                                 ResultMap resultMap,
+                                 List<Object> multipleResults,
+                                 ResultMapping parentMapping) throws SQLException {
         try {
             if (parentMapping != null) {
                 handleRowValues(rsw, resultMap, null, RowBounds.DEFAULT, parentMapping);
@@ -259,7 +262,11 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     //
     // HANDLE ROWS FOR SIMPLE RESULTMAP
     //
-    private void handleRowValues(ResultSetWrapper rsw, ResultMap resultMap, ResultHandler resultHandler, RowBounds rowBounds, ResultMapping parentMapping) throws SQLException {
+    private void handleRowValues(ResultSetWrapper rsw,
+                                 ResultMap resultMap,
+                                 ResultHandler resultHandler,
+                                 RowBounds rowBounds,
+                                 ResultMapping parentMapping) throws SQLException {
         if (resultMap.hasNestedResultMaps()) {
             ensureNoRowBounds();
             checkResultHandler();
@@ -603,7 +610,9 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     return names;
   }
 
-    private Object createPrimitiveResultObject(ResultSetWrapper rsw, ResultMap resultMap, String columnPrefix) throws SQLException {
+    private Object createPrimitiveResultObject(ResultSetWrapper rsw,
+                                               ResultMap resultMap,
+                                               String columnPrefix) throws SQLException {
         final Class<?> resultType = resultMap.getType();
         final String columnName;
         if (!resultMap.getResultMappings().isEmpty()) {
@@ -743,36 +752,35 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     return prefix + columnName;
   }
 
-  //
-  // HANDLE NESTED RESULT MAPS
-  //
-
-  private void handleRowValuesForNestedResultMap(ResultSetWrapper rsw, ResultMap resultMap, ResultHandler resultHandler, RowBounds rowBounds, ResultMapping parentMapping) throws SQLException {
-    final DefaultResultContext resultContext = new DefaultResultContext();
-    skipRows(rsw.getResultSet(), rowBounds);
-    Object rowValue = null;
-    while (shouldProcessMoreRows(rsw.getResultSet(), resultContext, rowBounds)) {
-      final ResultMap discriminatedResultMap = resolveDiscriminatedResultMap(rsw.getResultSet(), resultMap, null);
-      final CacheKey rowKey = createRowKey(discriminatedResultMap, rsw, null);
-      Object partialObject = nestedResultObjects.get(rowKey);
-      // issue #577 && #542
-      if (mappedStatement.isResultOrdered()) {
-        if (partialObject == null && rowValue != null) {
-          nestedResultObjects.clear();
-          storeObject(resultHandler, resultContext, rowValue, parentMapping, rsw.getResultSet());
+    //
+    // HANDLE NESTED RESULT MAPS
+    //
+    private void handleRowValuesForNestedResultMap(ResultSetWrapper rsw, ResultMap resultMap, ResultHandler resultHandler, RowBounds rowBounds, ResultMapping parentMapping) throws SQLException {
+        final DefaultResultContext resultContext = new DefaultResultContext();
+        skipRows(rsw.getResultSet(), rowBounds);
+        Object rowValue = null;
+        while (shouldProcessMoreRows(rsw.getResultSet(), resultContext, rowBounds)) {
+            final ResultMap discriminatedResultMap = resolveDiscriminatedResultMap(rsw.getResultSet(), resultMap, null);
+            final CacheKey rowKey = createRowKey(discriminatedResultMap, rsw, null);
+            Object partialObject = nestedResultObjects.get(rowKey);
+            // issue #577 && #542
+            if (mappedStatement.isResultOrdered()) {
+                if (partialObject == null && rowValue != null) {
+                    nestedResultObjects.clear();
+                    storeObject(resultHandler, resultContext, rowValue, parentMapping, rsw.getResultSet());
+                }
+                rowValue = getRowValue(rsw, discriminatedResultMap, rowKey, rowKey, null, partialObject);
+            } else {
+                rowValue = getRowValue(rsw, discriminatedResultMap, rowKey, rowKey, null, partialObject);
+                if (partialObject == null) {
+                    storeObject(resultHandler, resultContext, rowValue, parentMapping, rsw.getResultSet());
+                }
+            }
         }
-        rowValue = getRowValue(rsw, discriminatedResultMap, rowKey, rowKey, null, partialObject);
-      } else {
-        rowValue = getRowValue(rsw, discriminatedResultMap, rowKey, rowKey, null, partialObject);
-        if (partialObject == null) {
-          storeObject(resultHandler, resultContext, rowValue, parentMapping, rsw.getResultSet());
+        if (rowValue != null && mappedStatement.isResultOrdered()) {
+            storeObject(resultHandler, resultContext, rowValue, parentMapping, rsw.getResultSet());
         }
-      }
     }
-    if (rowValue != null && mappedStatement.isResultOrdered()) {
-      storeObject(resultHandler, resultContext, rowValue, parentMapping, rsw.getResultSet());
-    }
-  }
   
   //
   // GET VALUE FROM ROW FOR NESTED RESULT MAP

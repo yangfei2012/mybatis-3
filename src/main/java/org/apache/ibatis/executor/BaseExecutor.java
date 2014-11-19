@@ -127,16 +127,18 @@ public abstract class BaseExecutor implements Executor {
     return doFlushStatements(isRollBack);
   }
 
-  @Override
-  public <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler) throws SQLException {
-    BoundSql boundSql = ms.getBoundSql(parameter);
-    CacheKey key = createCacheKey(ms, parameter, rowBounds, boundSql);
-    return query(ms, parameter, rowBounds, resultHandler, key, boundSql);
- }
+    @Override
+    public <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler) throws SQLException {
+        BoundSql boundSql = ms.getBoundSql(parameter);
+        CacheKey key = createCacheKey(ms, parameter, rowBounds, boundSql);
+        return query(ms, parameter, rowBounds, resultHandler, key, boundSql);
+    }
 
     @SuppressWarnings("unchecked")
     @Override
-    public <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql) throws SQLException {
+    public <E> List<E> query(MappedStatement ms, Object parameter,
+                             RowBounds rowBounds, ResultHandler resultHandler,
+                             CacheKey key, BoundSql boundSql) throws SQLException {
         ErrorContext.instance().resource(ms.getResource()).activity("executing a query").object(ms.getId());
         if (closed) {
             throw new ExecutorException("Executor was closed.");
@@ -296,20 +298,22 @@ public abstract class BaseExecutor implements Executor {
     }
   }
 
-  private <E> List<E> queryFromDatabase(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql) throws SQLException {
-    List<E> list;
-    localCache.putObject(key, EXECUTION_PLACEHOLDER);
-    try {
-      list = doQuery(ms, parameter, rowBounds, resultHandler, boundSql);
-    } finally {
-      localCache.removeObject(key);
+    private <E> List<E> queryFromDatabase(MappedStatement ms, Object parameter,
+                                          RowBounds rowBounds, ResultHandler resultHandler,
+                                          CacheKey key, BoundSql boundSql) throws SQLException {
+        List<E> list;
+        localCache.putObject(key, EXECUTION_PLACEHOLDER);
+        try {
+            list = doQuery(ms, parameter, rowBounds, resultHandler, boundSql);
+        } finally {
+            localCache.removeObject(key);
+        }
+        localCache.putObject(key, list);
+        if (ms.getStatementType() == StatementType.CALLABLE) {
+            localOutputParameterCache.putObject(key, parameter);
+        }
+        return list;
     }
-    localCache.putObject(key, list);
-    if (ms.getStatementType() == StatementType.CALLABLE) {
-      localOutputParameterCache.putObject(key, parameter);
-    }
-    return list;
-  }
 
     protected Connection getConnection(Log statementLog) throws SQLException {
         Connection connection = transaction.getConnection();
