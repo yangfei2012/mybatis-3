@@ -80,23 +80,23 @@ public abstract class BaseStatementHandler implements StatementHandler {
     return parameterHandler;
   }
 
-  @Override
-  public Statement prepare(Connection connection) throws SQLException {
-    ErrorContext.instance().sql(boundSql.getSql());
-    Statement statement = null;
-    try {
-      statement = instantiateStatement(connection);
-      setStatementTimeout(statement);
-      setFetchSize(statement);
-      return statement;
-    } catch (SQLException e) {
-      closeStatement(statement);
-      throw e;
-    } catch (Exception e) {
-      closeStatement(statement);
-      throw new ExecutorException("Error preparing statement.  Cause: " + e, e);
+    @Override
+    public Statement prepare(Connection connection) throws SQLException {
+        ErrorContext.instance().sql(boundSql.getSql());
+        Statement statement = null;
+        try {
+            statement = instantiateStatement(connection);
+            setStatementTimeout(statement);
+            setFetchSize(statement);
+            return statement;
+        } catch (SQLException e) {
+            closeStatement(statement);
+            throw e;
+        } catch (Exception e) {
+            closeStatement(statement);
+            throw new ExecutorException("Error preparing statement.  Cause: " + e, e);
+        }
     }
-  }
 
   protected abstract Statement instantiateStatement(Connection connection) throws SQLException;
 
@@ -110,12 +110,12 @@ public abstract class BaseStatementHandler implements StatementHandler {
     }
   }
 
-  protected void setFetchSize(Statement stmt) throws SQLException {
-    Integer fetchSize = mappedStatement.getFetchSize();
-    if (fetchSize != null) {
-      stmt.setFetchSize(fetchSize);
+    protected void setFetchSize(Statement stmt) throws SQLException {
+        Integer fetchSize = mappedStatement.getFetchSize();
+        if (fetchSize != null) {
+            stmt.setFetchSize(fetchSize);
+        }
     }
-  }
 
   protected void closeStatement(Statement statement) {
     try {

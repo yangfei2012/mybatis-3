@@ -73,14 +73,14 @@ public class SimpleStatementHandler extends BaseStatementHandler {
     return resultSetHandler.<E>handleResultSets(statement);
   }
 
-  @Override
-  protected Statement instantiateStatement(Connection connection) throws SQLException {
-    if (mappedStatement.getResultSetType() != null) {
-      return connection.createStatement(mappedStatement.getResultSetType().getValue(), ResultSet.CONCUR_READ_ONLY);
-    } else {
-      return connection.createStatement();
+    @Override
+    protected Statement instantiateStatement(Connection connection) throws SQLException {
+        if (mappedStatement.getResultSetType() != null) {
+            return connection.createStatement(mappedStatement.getResultSetType().getValue(), ResultSet.CONCUR_READ_ONLY);
+        } else {
+            return connection.createStatement();
+        }
     }
-  }
 
   @Override
   public void parameterize(Statement statement) throws SQLException {

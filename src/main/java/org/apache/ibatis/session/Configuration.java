@@ -630,12 +630,12 @@ public class Configuration {
     return this.getMappedStatement(id, true);
   }
 
-  public MappedStatement getMappedStatement(String id, boolean validateIncompleteStatements) {
-    if (validateIncompleteStatements) {
-      buildAllStatements();
+    public MappedStatement getMappedStatement(String id, boolean validateIncompleteStatements) {
+        if (validateIncompleteStatements) {
+            buildAllStatements();
+        }
+        return mappedStatements.get(id);
     }
-    return mappedStatements.get(id);
-  }
 
   public Map<String, XNode> getSqlFragments() {
     return sqlFragments;

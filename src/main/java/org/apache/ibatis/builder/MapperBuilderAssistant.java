@@ -291,15 +291,14 @@ public class MapperBuilderAssistant extends BaseBuilder {
         statementBuilder.resultOrdered(resultOrdered);
         statementBuilder.resulSets(resultSets);
         setStatementTimeout(timeout, statementBuilder);
+        setStatementParameterMap(parameterMap, parameterType, statementBuilder);
+        setStatementResultMap(resultMap, resultType, resultSetType, statementBuilder);
+        setStatementCache(isSelect, flushCache, useCache, currentCache, statementBuilder);
 
-    setStatementParameterMap(parameterMap, parameterType, statementBuilder);
-    setStatementResultMap(resultMap, resultType, resultSetType, statementBuilder);
-    setStatementCache(isSelect, flushCache, useCache, currentCache, statementBuilder);
-
-    MappedStatement statement = statementBuilder.build();
-    configuration.addMappedStatement(statement);
-    return statement;
-  }
+        MappedStatement statement = statementBuilder.build();
+        configuration.addMappedStatement(statement);
+        return statement;
+    }
 
   private <T> T valueOrDefault(T value, T defaultValue) {
     return value == null ? defaultValue : value;
