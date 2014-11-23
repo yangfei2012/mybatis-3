@@ -56,12 +56,12 @@ public class PreparedStatementHandler extends BaseStatementHandler {
     ps.addBatch();
   }
 
-  @Override
-  public <E> List<E> query(Statement statement, ResultHandler resultHandler) throws SQLException {
-    PreparedStatement ps = (PreparedStatement) statement;
-    ps.execute();
-    return resultSetHandler.<E> handleResultSets(ps);
-  }
+    @Override
+    public <E> List<E> query(Statement statement, ResultHandler resultHandler) throws SQLException {
+        PreparedStatement ps = (PreparedStatement) statement;
+        ps.execute();
+        return resultSetHandler.<E> handleResultSets(ps);
+    }
 
   @Override
   protected Statement instantiateStatement(Connection connection) throws SQLException {

@@ -55,13 +55,15 @@ public class MetaObject {
     }
   }
 
-  public static MetaObject forObject(Object object, ObjectFactory objectFactory, ObjectWrapperFactory objectWrapperFactory) {
-    if (object == null) {
-      return SystemMetaObject.NULL_META_OBJECT;
-    } else {
-      return new MetaObject(object, objectFactory, objectWrapperFactory);
+    public static MetaObject forObject(Object object,
+                                       ObjectFactory objectFactory,
+                                       ObjectWrapperFactory objectWrapperFactory) {
+        if (object == null) {
+            return SystemMetaObject.NULL_META_OBJECT;
+        } else {
+            return new MetaObject(object, objectFactory, objectWrapperFactory);
+        }
     }
-  }
 
   public ObjectFactory getObjectFactory() {
     return objectFactory;

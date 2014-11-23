@@ -120,10 +120,10 @@ public class XPathParser {
     this.document = createDocument(new InputSource(reader));
   }
 
-  public XPathParser(InputStream inputStream, boolean validation, Properties variables, EntityResolver entityResolver) {
-    commonConstructor(validation, variables, entityResolver);
-    this.document = createDocument(new InputSource(inputStream));
-  }
+    public XPathParser(InputStream inputStream, boolean validation, Properties variables, EntityResolver entityResolver) {
+        commonConstructor(validation, variables, entityResolver);
+        this.document = createDocument(new InputSource(inputStream));
+    }
 
   public XPathParser(Document document, boolean validation, Properties variables, EntityResolver entityResolver) {
     commonConstructor(validation, variables, entityResolver);
@@ -209,56 +209,55 @@ public class XPathParser {
     return evalNode(document, expression);
   }
 
-  public XNode evalNode(Object root, String expression) {
-    Node node = (Node) evaluate(expression, root, XPathConstants.NODE);
-    if (node == null) {
-      return null;
+    public XNode evalNode(Object root, String expression) {
+        Node node = (Node) evaluate(expression, root, XPathConstants.NODE);
+        if (node == null) {
+            return null;
+        }
+        return new XNode(this, node, variables);
     }
-    return new XNode(this, node, variables);
-  }
 
-  private Object evaluate(String expression, Object root, QName returnType) {
-    try {
-      return xpath.evaluate(expression, root, returnType);
-    } catch (Exception e) {
-      throw new BuilderException("Error evaluating XPath.  Cause: " + e, e);
+    private Object evaluate(String expression, Object root, QName returnType) {
+        try {
+            return xpath.evaluate(expression, root, returnType);
+        } catch (Exception e) {
+            throw new BuilderException("Error evaluating XPath.  Cause: " + e, e);
+        }
     }
-  }
 
-  private Document createDocument(InputSource inputSource) {
-    // important: this must only be called AFTER common constructor
-    try {
-      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-      factory.setValidating(validation);
+    private Document createDocument(InputSource inputSource) {
+        // important: this must only be called AFTER common constructor
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            factory.setValidating(validation);
 
-      factory.setNamespaceAware(false);
-      factory.setIgnoringComments(true);
-      factory.setIgnoringElementContentWhitespace(false);
-      factory.setCoalescing(false);
-      factory.setExpandEntityReferences(true);
+            factory.setNamespaceAware(false);
+            factory.setIgnoringComments(true);
+            factory.setIgnoringElementContentWhitespace(false);
+            factory.setCoalescing(false);
+            factory.setExpandEntityReferences(true);
 
-      DocumentBuilder builder = factory.newDocumentBuilder();
-      builder.setEntityResolver(entityResolver);
-      builder.setErrorHandler(new ErrorHandler() {
-        @Override
-        public void error(SAXParseException exception) throws SAXException {
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            builder.setEntityResolver(entityResolver);
+            builder.setErrorHandler(new ErrorHandler() {
+                @Override
+                public void error(SAXParseException exception) throws SAXException {
           throw exception;
         }
 
-        @Override
-        public void fatalError(SAXParseException exception) throws SAXException {
+                @Override
+                public void fatalError(SAXParseException exception) throws SAXException {
           throw exception;
         }
 
-        @Override
-        public void warning(SAXParseException exception) throws SAXException {
+                @Override
+                public void warning(SAXParseException exception) throws SAXException {}
+            });
+            return builder.parse(inputSource);
+        } catch (Exception e) {
+            throw new BuilderException("Error creating document instance.  Cause: " + e, e);
         }
-      });
-      return builder.parse(inputSource);
-    } catch (Exception e) {
-      throw new BuilderException("Error creating document instance.  Cause: " + e, e);
     }
-  }
 
   private void commonConstructor(boolean validation, Properties variables, EntityResolver entityResolver) {
     this.validation = validation;

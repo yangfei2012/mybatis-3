@@ -370,9 +370,9 @@ public class Configuration {
     this.useColumnLabel = useColumnLabel;
   }
 
-  public LocalCacheScope getLocalCacheScope() {
-    return localCacheScope;
-  }
+    public LocalCacheScope getLocalCacheScope() {
+        return localCacheScope;
+    }
 
   public void setLocalCacheScope(LocalCacheScope localCacheScope) {
     this.localCacheScope = localCacheScope;
@@ -669,12 +669,12 @@ public class Configuration {
     return hasStatement(statementName, true);
   }
 
-  public boolean hasStatement(String statementName, boolean validateIncompleteStatements) {
-    if (validateIncompleteStatements) {
-      buildAllStatements();
+    public boolean hasStatement(String statementName, boolean validateIncompleteStatements) {
+        if (validateIncompleteStatements) {
+            buildAllStatements();
+        }
+        return mappedStatements.containsKey(statementName);
     }
-    return mappedStatements.containsKey(statementName);
-  }
 
   public void addCacheRef(String namespace, String referencedNamespace) {
     cacheRefMap.put(namespace, referencedNamespace);

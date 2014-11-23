@@ -37,9 +37,9 @@ public class MetaClass {
     this.reflector = Reflector.forClass(type);
   }
 
-  public static MetaClass forClass(Class<?> type) {
-    return new MetaClass(type);
-  }
+    public static MetaClass forClass(Class<?> type) {
+        return new MetaClass(type);
+    }
 
   public static boolean isClassCacheEnabled() {
     return Reflector.isClassCacheEnabled();

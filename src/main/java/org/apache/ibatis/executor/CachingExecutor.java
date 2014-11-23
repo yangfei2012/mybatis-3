@@ -82,25 +82,26 @@ public class CachingExecutor implements Executor {
     return query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
   }
 
-  @Override
-  public <E> List<E> query(MappedStatement ms, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql)
-      throws SQLException {
-    Cache cache = ms.getCache();
-    if (cache != null) {
-      flushCacheIfRequired(ms);
-      if (ms.isUseCache() && resultHandler == null) {
-        ensureNoOutParams(ms, parameterObject, boundSql);
-        @SuppressWarnings("unchecked")
-        List<E> list = (List<E>) tcm.getObject(cache, key);
-        if (list == null) {
-          list = delegate.<E> query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
-          tcm.putObject(cache, key, list); // issue #578 and #116
+    @Override
+    public <E> List<E> query(MappedStatement ms, Object parameterObject,
+                             RowBounds rowBounds, ResultHandler resultHandler,
+                             CacheKey key, BoundSql boundSql) throws SQLException {
+        Cache cache = ms.getCache();
+        if (cache != null) {
+            flushCacheIfRequired(ms);
+            if (ms.isUseCache() && resultHandler == null) {
+                ensureNoOutParams(ms, parameterObject, boundSql);
+                @SuppressWarnings("unchecked")
+                List<E> list = (List<E>) tcm.getObject(cache, key);
+                if (list == null) {
+                    list = delegate.<E> query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
+                    tcm.putObject(cache, key, list); // issue #578 and #116
+                }
+                return list;
+            }
         }
-        return list;
-      }
+        return delegate.<E> query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
     }
-    return delegate.<E> query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
-  }
 
   @Override
   public List<BatchResult> flushStatements() throws SQLException {

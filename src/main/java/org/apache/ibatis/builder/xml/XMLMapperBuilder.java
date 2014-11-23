@@ -281,12 +281,14 @@ public class XMLMapperBuilder extends BaseBuilder {
       }
     }
     ResultMapResolver resultMapResolver = new ResultMapResolver(builderAssistant, id, typeClass, extend, discriminator, resultMappings, autoMapping);
-    try {
-      return resultMapResolver.resolve();
-    } catch (IncompleteElementException  e) {
-      configuration.addIncompleteResultMap(resultMapResolver);
-      throw e;
-    }
+        try {
+            return resultMapResolver.resolve();
+        } catch (IncompleteElementException  e) {
+            // 这里添加incompleteResultMap，等mapper.select等操作时会检查这些，一变fail fast
+            // 参看：Configuration.getMappedStatement--> buildAllStatements()
+            configuration.addIncompleteResultMap(resultMapResolver);
+            throw e;
+        }
   }
 
   private void processConstructorElement(XNode resultChild, Class<?> resultType, List<ResultMapping> resultMappings) throws Exception {

@@ -71,9 +71,11 @@ public class XMLConfigBuilder extends BaseBuilder {
     this(inputStream, environment, null);
   }
 
-  public XMLConfigBuilder(InputStream inputStream, String environment, Properties props) {
-    this(new XPathParser(inputStream, true, props, new XMLMapperEntityResolver()), environment, props);
-  }
+    public XMLConfigBuilder(InputStream inputStream, String environment, Properties props) {
+        this(new XPathParser(inputStream, true, props, new XMLMapperEntityResolver()),
+             environment,
+             props);
+    }
 
   private XMLConfigBuilder(XPathParser parser, String environment, Properties props) {
     super(new Configuration());

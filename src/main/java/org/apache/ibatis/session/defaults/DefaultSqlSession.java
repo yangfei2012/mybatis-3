@@ -47,12 +47,13 @@ public class DefaultSqlSession implements SqlSession {
   private boolean autoCommit;
   private boolean dirty;
   
-  public DefaultSqlSession(Configuration configuration, Executor executor, boolean autoCommit) {
-    this.configuration = configuration;
-    this.executor = executor;
-    this.dirty = false;
-    this.autoCommit = autoCommit;
-  }
+    public DefaultSqlSession(Configuration configuration,
+                             Executor executor, boolean autoCommit) {
+        this.configuration = configuration;
+        this.executor = executor;
+        this.dirty = false;
+        this.autoCommit = autoCommit;
+    }
 
   public DefaultSqlSession(Configuration configuration, Executor executor) {
     this(configuration, executor, false);

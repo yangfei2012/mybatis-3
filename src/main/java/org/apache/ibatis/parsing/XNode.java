@@ -38,14 +38,14 @@ public class XNode {
   private Properties variables;
   private XPathParser xpathParser;
 
-  public XNode(XPathParser xpathParser, Node node, Properties variables) {
-    this.xpathParser = xpathParser;
-    this.node = node;
-    this.name = node.getNodeName();
-    this.variables = variables;
-    this.attributes = parseAttributes(node);
-    this.body = parseBody(node);
-  }
+    public XNode(XPathParser xpathParser, Node node, Properties variables) {
+        this.xpathParser = xpathParser;
+        this.node = node;
+        this.name = node.getNodeName();
+        this.variables = variables;
+        this.attributes = parseAttributes(node);
+        this.body = parseBody(node);
+    }
 
   public XNode newXNode(Node node) {
     return new XNode(xpathParser, node, variables);
@@ -360,29 +360,29 @@ public class XNode {
     return attributes;
   }
 
-  private String parseBody(Node node) {
-    String data = getBodyData(node);
-    if (data == null) {
-      NodeList children = node.getChildNodes();
-      for (int i = 0; i < children.getLength(); i++) {
-        Node child = children.item(i);
-        data = getBodyData(child);
-        if (data != null) {
-          break;
+    private String parseBody(Node node) {
+        String data = getBodyData(node);
+        if (data == null) {
+            NodeList children = node.getChildNodes();
+            for (int i = 0; i < children.getLength(); i++) {
+                Node child = children.item(i);
+                data = getBodyData(child);
+                if (data != null) {
+                    break;
+                }
+            }
         }
-      }
+        return data;
     }
-    return data;
-  }
 
-  private String getBodyData(Node child) {
-    if (child.getNodeType() == Node.CDATA_SECTION_NODE
-        || child.getNodeType() == Node.TEXT_NODE) {
-      String data = ((CharacterData) child).getData();
-      data = PropertyParser.parse(data, variables);
-      return data;
+    private String getBodyData(Node child) {
+        if (child.getNodeType() == Node.CDATA_SECTION_NODE
+            || child.getNodeType() == Node.TEXT_NODE) {
+            String data = ((CharacterData) child).getData();
+            data = PropertyParser.parse(data, variables);
+            return data;
+        }
+        return null;
     }
-    return null;
-  }
 
 }

@@ -38,10 +38,10 @@ public class DefaultResultHandler implements ResultHandler {
     list = objectFactory.create(List.class);
   }
 
-  @Override
-  public void handleResult(ResultContext context) {
-    list.add(context.getResultObject());
-  }
+    @Override
+    public void handleResult(ResultContext context) {
+        list.add(context.getResultObject());
+    }
 
   public List<Object> getResultList() {
     return list;
