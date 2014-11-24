@@ -114,29 +114,29 @@ public class XMLConfigBuilder extends BaseBuilder {
         }
     }
 
-  private void typeAliasesElement(XNode parent) {
-    if (parent != null) {
-      for (XNode child : parent.getChildren()) {
-        if ("package".equals(child.getName())) {
-          String typeAliasPackage = child.getStringAttribute("name");
-          configuration.getTypeAliasRegistry().registerAliases(typeAliasPackage);
-        } else {
-          String alias = child.getStringAttribute("alias");
-          String type = child.getStringAttribute("type");
-          try {
-            Class<?> clazz = Resources.classForName(type);
-            if (alias == null) {
-              typeAliasRegistry.registerAlias(clazz);
-            } else {
-              typeAliasRegistry.registerAlias(alias, clazz);
+    private void typeAliasesElement(XNode parent) {
+        if (parent != null) {
+            for (XNode child : parent.getChildren()) {
+                if ("package".equals(child.getName())) {
+                    String typeAliasPackage = child.getStringAttribute("name");
+                    configuration.getTypeAliasRegistry().registerAliases(typeAliasPackage);
+                } else {
+                    String alias = child.getStringAttribute("alias");
+                    String type = child.getStringAttribute("type");
+                    try {
+                        Class<?> clazz = Resources.classForName(type);
+                        if (alias == null) {
+                            typeAliasRegistry.registerAlias(clazz);
+                        } else {
+                            typeAliasRegistry.registerAlias(alias, clazz);
+                        }
+                    } catch (ClassNotFoundException e) {
+                        throw new BuilderException("Error registering typeAlias for '" + alias + "'. Cause: " + e, e);
+                    }
+                }
             }
-          } catch (ClassNotFoundException e) {
-            throw new BuilderException("Error registering typeAlias for '" + alias + "'. Cause: " + e, e);
-          }
         }
-      }
     }
-  }
 
   private void pluginElement(XNode parent) throws Exception {
     if (parent != null) {
