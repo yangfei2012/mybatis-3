@@ -125,6 +125,7 @@ public class MapperAnnotationBuilder {
         try {
           // issue #237
           if (!method.isBridge()) {
+            // 解析一个方法生成对应的 MapperedStatement 对象
             parseStatement(method);
           }
         } catch (IncompleteElementException e) {

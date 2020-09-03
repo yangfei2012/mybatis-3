@@ -87,10 +87,18 @@ public class XMLMapperBuilder extends BaseBuilder {
     this.resource = resource;
   }
 
+  /**
+   * 将Mapper-xml的各个节点进行读取，并生成MapperStatement添加到Configuration中，根据Namespace对Mapper进行注册绑定
+   */
   public void parse() {
     if (!configuration.isResourceLoaded(resource)) {
+
+      // 1.解析xml中的节点信息，并生成MappedStatement
       configurationElement(parser.evalNode("/mapper"));
+
       configuration.addLoadedResource(resource);
+
+      // 2.根据Namespace绑定Mapper，也会解析Mapper注解中的信息生成MappedStatement
       bindMapperForNamespace();
     }
 
@@ -114,8 +122,9 @@ public class XMLMapperBuilder extends BaseBuilder {
       cacheElement(context.evalNode("cache"));
       parameterMapElement(context.evalNodes("/mapper/parameterMap"));
       resultMapElements(context.evalNodes("/mapper/resultMap"));
-      sqlElement(context.evalNodes("/mapper/sql"));
-      buildStatementFromContext(context.evalNodes("select|insert|update|delete"));
+      sqlElement(context.evalNodes("/mapper/sql")); // 解析xml中的sql片段
+      buildStatementFromContext(
+              context.evalNodes("select|insert|update|delete")); // 解析与Mapper方法对应的sql
     } catch (Exception e) {
       throw new BuilderException("Error parsing Mapper XML. Cause: " + e, e);
     }
